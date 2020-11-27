@@ -6,16 +6,30 @@ window.addEventListener('DOMContentLoaded', function () {
         info = document.querySelector('.info-header'), //родитель
         tabContent = document.querySelectorAll('.info-tabcontent');
 
-    function hideTabComtent(a) {
+    // function hideTabComtent(a) {
+    //     for (let i = a; i < tabContent.length; i++) {
+    //         tabContent[i].classList.remove('show'); //удаляем класс show, 
+    //         tabContent[i].classList.add('hide'); //но этого недостаточно надо hide (скрыть)
+
+    //     }
+    // }
+    let hideTabComtent = (a) => {
         for (let i = a; i < tabContent.length; i++) {
             tabContent[i].classList.remove('show'); //удаляем класс show, 
             tabContent[i].classList.add('hide'); //но этого недостаточно надо hide (скрыть)
 
         }
     }
+
     hideTabComtent(1);
 
-    function showTabContent(b) { //отображаем
+    // function showTabContent(b) { //отображаем
+    //     if (tabContent[b].classList.contains('hide')) {
+    //         tabContent[b].classList.remove('hide'); //сначало удалим
+    //         tabContent[b].classList.add('show'); //потом добавим и отобразим
+    //     }
+    // };
+    let showTabContent = (b) => { //отображаем
         if (tabContent[b].classList.contains('hide')) {
             tabContent[b].classList.remove('hide'); //сначало удалим
             tabContent[b].classList.add('show'); //потом добавим и отобразим
@@ -37,9 +51,10 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+
     //Timer к  уроку 3.5
     // let deadline = '2020-11-26';
-    let deadline = '2020-11-26 20:10:00'; //HW-3.5
+    let deadline = '2020-11-28 20:10:00'; //HW-3.5
 
     function getTimeRemaining(endTime) {
         let t = Date.parse(endTime) - Date.parse(new Date()),
@@ -56,7 +71,7 @@ window.addEventListener('DOMContentLoaded', function () {
         };
     };
 
-    function setClock(id, endTime) {
+    function setClock(id, endTime = deadline) {
         let timer = document.getElementById(id),
             hours = timer.querySelector('.hours'),
             minuts = timer.querySelector('.minutes'),
@@ -65,27 +80,6 @@ window.addEventListener('DOMContentLoaded', function () {
 
         function updateClock() {
             let t = getTimeRemaining(endTime);
-            //Мое ДЗ 3.5
-            // if (t.hours < 10) {//HW-3.5
-            //     hours.textContent = '0' + t.hours;
-            // }
-            // else {
-            //     hours.textContent = t.hours;
-            // };
-
-            // if (t.minuts < 10) {//HW-3.5
-            //     minuts.textContent = '0' + t.minuts;
-            // }
-            // else {
-            //     minuts.textContent = t.minuts;
-            // };
-
-            // if (t.seconds < 10) {//HW-3.5
-            //     seconds.textContent = '0' + t.seconds;
-            // }
-            // else {
-            //     seconds.textContent = t.seconds;
-            // };
 
             //Ответ от beonMax ДЗ 3.5
             function addZero(num) {
@@ -97,7 +91,7 @@ window.addEventListener('DOMContentLoaded', function () {
             hours.textContent = addZero(t.hours);
             minuts.textContent = addZero(t.minuts);
             seconds.textContent = addZero(t.seconds);
-            
+
             if (t.total < 0) {
                 clearInterval(timeInterval);
                 hours.textContent = minuts.textContent = seconds.textContent = '00'; //HW-3.5
@@ -105,7 +99,10 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     };
 
+
     setClock('timer', deadline);
+    //setClock('timer');
+
 
 
     //Modal
@@ -115,10 +112,10 @@ window.addEventListener('DOMContentLoaded', function () {
         overlay = document.querySelector('.overlay'),
         close = document.querySelector('.popup-close');
 
-    
+
     function infoTabcontent() {
         for (let i = 0; i < description.length; i++) {
-                description[i].addEventListener('click', function () {
+            description[i].addEventListener('click', () => {
                 overlay.style.display = 'block';
                 this.classList.add('more-splash'); //где-то в css
                 document.body.style.overflow = 'hidden';
@@ -126,16 +123,16 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     }
     infoTabcontent();
-    
 
-    more.addEventListener('click', function () {
+
+    more.addEventListener('click', function() {
         overlay.style.display = 'block';
         this.classList.add('more-splash'); //где-то в css
         document.body.style.overflow = 'hidden';
     });
 
 
-    close.addEventListener('click', function () {
+    close.addEventListener('click', function() {
         overlay.style.display = "none";
         more.classList.remove('more-splash');
         document.body.style.overflow = '';
