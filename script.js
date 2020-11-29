@@ -42,7 +42,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
 
     //Timer к  уроку 3.5
-    let deadline = '2020-11-28 20:10:00'; //HW-3.5
+    let deadline = '2020-12-28 20:10:00'; //HW-3.5
 
     function getTimeRemaining(endTime) {
         let t = Date.parse(endTime) - Date.parse(new Date()),
@@ -126,7 +126,7 @@ window.addEventListener('DOMContentLoaded', function () {
         document.body.style.overflow = '';
     });
 
-    //Lesson 4.3
+    //Lesson 4.3 + 4.4 (через POST, без метода JSON )
 
     let message = {
         loading: 'Загрузка...',
@@ -138,54 +138,72 @@ window.addEventListener('DOMContentLoaded', function () {
         input = document.getElementsByTagName('input'),
         statusMessage = document.createElement('div'),
         contactForm = document.getElementById('form'); //ДЗ-4.3
-       
+
     statusMessage.classList.add('status'); // status прописан в css(в уроке) здесь я не нашел
 
     //запрос для модальному окну
     function sendForm(elem) {
         elem.addEventListener('submit', function (event) {
+
             event.preventDefault(); //отключаем стандартное поведение страницы (скролиться вверх)
             statusMessage.style.color = "#c78030";
             elem.appendChild(statusMessage); //оповещаем пользователя
-    
-            //формируем запрос
-            let request = new XMLHttpRequest();
-            request.open('POST', 'server.php');
-    
-            /*  в формате FormData */
-            request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); //в формате FormData
+
             //получим данные который введет пользователь через вствроенный в браузер объект FormData
+
             let formData = new FormData(elem); //FormData - создает структуру в формате 'ключ: значение' (ключ в name, значение от пользователя)
-            request.send(formData);//отпарвляем на сервер в формате FormData  
-    
-    
-            /*  в формате JSON */
-            // request.setRequestHeader('Content-type', 'application/json; charset=utf-8'); //в формате JSON 
-            // //получим данные который введет пользователь через вствроенный в браузер объект FormData
-            // let formData = new FormData(elem); //FormData - создает структуру в формате 'ключ: значение' (ключ в name, значение от пользователя)
-            // let obj = {}; //для JSON 
-            // formData.forEach(function (value, key) { //в формате JSON 
-            //     obj[key] = value;
-            // });
-            // let json = JSON.stringify(obj); //в формате JSON 
-            // request.send(json); //отпарвляем на сервер  в формате JSON 
-    
-    
-    
-            //наблюдаем за сотоянием нашего запроса
-            request.addEventListener('readystatechange', function () {
-                if (request.readyState < 4) {
-                    statusMessage.innerHTML = message.loading;
-                } else if (request.readyState === 4 && request.status == 200) {
-                    statusMessage.innerHTML = message.success;
-                } else {
-                    statusMessage.innerHTML = message.failure;
-                }
-            });
-            //надо очистить input в форме
-            for (let i = 0; i < input.length; i++) {
-                input[i].value = '';
-            };
+
+            function posData(data) {
+                return new Promise(function (resolve, reject) {
+
+                    //формируем запрос
+
+                    let request = new XMLHttpRequest();
+                    request.open('POST', 'server.php');
+                    /*  в формате FormData */
+
+                    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); //в формате FormData
+
+                    //наблюдаем за состоянием нашего запроса
+
+                    request.addEventListener('readystatechange', function () { //в видео появилось   request.onreadystatechange = function() {
+                        if (request.readyState < 4) {
+                            statusMessage.innerHTML = message.loading; //resolve()
+                        } else if (request.readyState === 4 && request.status == 200) {
+                            resolve()
+                        } else {
+                            reject()
+                        }
+                    });
+
+                    request.send(data); //отпарвляем на сервер в формате FormData  
+
+                });
+
+            } //End posData
+
+            function clearInput() {
+                //надо очистить input в форме
+                for (let i = 0; i < input.length; i++) {
+                    input[i].value = '';
+                };
+            }
+
+            posData(formData)
+                .then(() => statusMessage.innerHTML = message.success, () => statusMessage.innerHTML = message.failure)
+                
+                // .then(()=> statusMessage.innerHTML = message.loading)
+                // .then( () => {
+                //     thanksModal.style.display = 'block';
+                //     mainModal.style.display = 'done';
+                //     statusMessage.innerHTML = '';
+                // } )
+                // .catch(()=> statusMessage.innerHTML = message.failure)
+
+                .then(clearInput) //если после .catch то .then запускается всегда 
+
+
+
         });
     };
 
