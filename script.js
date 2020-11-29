@@ -6,13 +6,7 @@ window.addEventListener('DOMContentLoaded', function () {
         info = document.querySelector('.info-header'), //родитель
         tabContent = document.querySelectorAll('.info-tabcontent');
 
-    // function hideTabComtent(a) {
-    //     for (let i = a; i < tabContent.length; i++) {
-    //         tabContent[i].classList.remove('show'); //удаляем класс show, 
-    //         tabContent[i].classList.add('hide'); //но этого недостаточно надо hide (скрыть)
 
-    //     }
-    // }
     let hideTabComtent = function (a) {
         for (let i = a; i < tabContent.length; i++) {
             tabContent[i].classList.remove('show'); //удаляем класс show, 
@@ -23,12 +17,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     hideTabComtent(1);
 
-    // function showTabContent(b) { //отображаем
-    //     if (tabContent[b].classList.contains('hide')) {
-    //         tabContent[b].classList.remove('hide'); //сначало удалим
-    //         tabContent[b].classList.add('show'); //потом добавим и отобразим
-    //     }
-    // };
+
     let showTabContent = function (b) { //отображаем
         if (tabContent[b].classList.contains('hide')) {
             tabContent[b].classList.remove('hide'); //сначало удалим
@@ -53,7 +42,6 @@ window.addEventListener('DOMContentLoaded', function () {
 
 
     //Timer к  уроку 3.5
-    // let deadline = '2020-11-26';
     let deadline = '2020-11-28 20:10:00'; //HW-3.5
 
     function getTimeRemaining(endTime) {
@@ -147,97 +135,60 @@ window.addEventListener('DOMContentLoaded', function () {
     };
 
     let form = document.querySelector('.main-form'),
-        input = form.getElementsByTagName('input'),
+        input = document.getElementsByTagName('input'),
         statusMessage = document.createElement('div'),
         contactForm = document.getElementById('form'); //ДЗ-4.3
-
+       
     statusMessage.classList.add('status'); // status прописан в css(в уроке) здесь я не нашел
 
     //запрос для модальному окну
-    form.addEventListener('submit', function (event) {
-        event.preventDefault(); //отключаем стандартное поведение страницы (скролиться вверх)
-        form.appendChild(statusMessage); //оповещаем пользователя
-
-        //формируем запрос
-        let request = new XMLHttpRequest();
-        request.open('POST', 'server.php');
-
-        /*  в формате FormData */
-        // request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); //в формате FormData
-        // //получим данные который введет пользователь через вствроенный в браузер объект FormData
-        // let formData = new FormData(form); //FormData - создает структуру в формате 'ключ: значение' (ключ в name, значение от пользователя)
-        // request.send(formData);//отпарвляем на сервер в формате FormData  
-
-
-        /*  в формате JSON */
-        request.setRequestHeader('Content-type', 'application/json; charset=utf-8'); //в формате JSON 
-        //получим данные который введет пользователь через вствроенный в браузер объект FormData
-        let formData = new FormData(form); //FormData - создает структуру в формате 'ключ: значение' (ключ в name, значение от пользователя)
-        let obj = {}; //для JSON 
-        formData.forEach(function (value, key) { //в формате JSON 
-            obj[key] = value;
+    function sendForm(elem) {
+        elem.addEventListener('submit', function (event) {
+            event.preventDefault(); //отключаем стандартное поведение страницы (скролиться вверх)
+            statusMessage.style.color = "#c78030";
+            elem.appendChild(statusMessage); //оповещаем пользователя
+    
+            //формируем запрос
+            let request = new XMLHttpRequest();
+            request.open('POST', 'server.php');
+    
+            /*  в формате FormData */
+            request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); //в формате FormData
+            //получим данные который введет пользователь через вствроенный в браузер объект FormData
+            let formData = new FormData(elem); //FormData - создает структуру в формате 'ключ: значение' (ключ в name, значение от пользователя)
+            request.send(formData);//отпарвляем на сервер в формате FormData  
+    
+    
+            /*  в формате JSON */
+            // request.setRequestHeader('Content-type', 'application/json; charset=utf-8'); //в формате JSON 
+            // //получим данные который введет пользователь через вствроенный в браузер объект FormData
+            // let formData = new FormData(elem); //FormData - создает структуру в формате 'ключ: значение' (ключ в name, значение от пользователя)
+            // let obj = {}; //для JSON 
+            // formData.forEach(function (value, key) { //в формате JSON 
+            //     obj[key] = value;
+            // });
+            // let json = JSON.stringify(obj); //в формате JSON 
+            // request.send(json); //отпарвляем на сервер  в формате JSON 
+    
+    
+    
+            //наблюдаем за сотоянием нашего запроса
+            request.addEventListener('readystatechange', function () {
+                if (request.readyState < 4) {
+                    statusMessage.innerHTML = message.loading;
+                } else if (request.readyState === 4 && request.status == 200) {
+                    statusMessage.innerHTML = message.success;
+                } else {
+                    statusMessage.innerHTML = message.failure;
+                }
+            });
+            //надо очистить input в форме
+            for (let i = 0; i < input.length; i++) {
+                input[i].value = '';
+            };
         });
-        let json = JSON.stringify(obj); //в формате JSON 
-        request.send(json); //отпарвляем на сервер  в формате JSON 
+    };
 
-
-
-        //наблюдаем за сотоянием нашего запроса
-        request.addEventListener('readystatechange', function () {
-            if (request.readyState < 4) {
-                statusMessage.innerHTML = message.loading;
-            } else if (request.readyState === 4 && request.status == 200) {
-                statusMessage.innerHTML = message.success;
-            } else {
-                statusMessage.innerHTML = message.failure;
-            }
-        });
-        //надо очистить input в форме
-        for (let i = 0; i < input.length; i++) {
-            input[i].value = '';
-        };
-    });
-
-
-    contactForm.addEventListener('submit', (event) => { //ДЗ-4.3 запрос для формы контакта в формате FormData
-        event.preventDefault(); 
-        statusMessage.style.color = "#c78030";
-        contactForm.appendChild(statusMessage);
-                
-        let request = new XMLHttpRequest();
-        request.open('POST', 'server.php');
-
-        /*  в формате FormData */
-        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
-        let formData = new FormData(contactForm); 
-        request.send(formData);
-
-
-        /*  в формате JSON */
-        // request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-        // let formData = new FormData(contactForm); //FormData - создает структуру в формате 'ключ: значение' (ключ в name, значение от пользователя)
-        // let obj = {};
-        // formData.forEach(function (value, key) {
-        //     obj[key] = value;
-        // });
-        // let json = JSON.stringify(obj);
-        // request.send(json);
-
-
-
-        request.addEventListener('readystatechange', function () {
-            if (request.readyState < 4) {
-                statusMessage.innerHTML = message.loading;
-            } else if (request.readyState === 4 && request.status == 200) {
-                statusMessage.innerHTML = message.success;
-            } else {
-                statusMessage.innerHTML = message.failure;
-            }
-        });
-        for (let i = 0; i < input.length; i++) {
-            input[i].value = '';
-        };
-    });
-
-   
+    sendForm(form);
+    sendForm(contactForm);
 });
