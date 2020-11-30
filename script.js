@@ -191,7 +191,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
             posData(formData)
                 .then(() => statusMessage.innerHTML = message.success, () => statusMessage.innerHTML = message.failure)
-                
+
                 // .then(()=> statusMessage.innerHTML = message.loading)
                 // .then( () => {
                 //     thanksModal.style.display = 'block';
@@ -209,4 +209,104 @@ window.addEventListener('DOMContentLoaded', function () {
 
     sendForm(form);
     sendForm(contactForm);
+
+    //Slider Lesson 4.6
+    let sliderIndex = 1, //первый слайд
+        slides = document.querySelectorAll('.slider-item'),
+        prev = document.querySelector('.prev'),
+        next = document.querySelector('.next'),
+        dotWrap = document.querySelector('.slider-dots'),
+        dots = document.querySelectorAll('.dot');
+
+    showSlider(sliderIndex);
+
+    function showSlider(n) { //функция показывает и добавляет класс активности
+
+        if (n > slides.length) {
+            sliderIndex = 1;
+        } else if (n < 1) { 
+            sliderIndex = slides.length;
+        }
+
+
+        slides.forEach((item) => item.style.display = 'none'); //перебераем все слайды и скрываем
+
+        dots.forEach(item => item.classList.remove('dot-active')); //удаляем класс dot-active ? а не dot
+
+        slides[sliderIndex - 1].style.display = 'block'; //block - элемент отображается как элемент блочного уровня
+        dots[sliderIndex - 1].classList.add('dot-active'); //добавляем класс dot-active
+
+    }
+
+    function plussSlides(n) { //функция увеличивает параметр sliderIndex
+        showSlider(sliderIndex += n);
+    }
+    
+    function currentSlide(n) { //функция текущего слайда
+        showSlider(sliderIndex = n);
+    }
+    
+    prev.addEventListener('click', () => { //функция стрелочка назад
+        plussSlides(-1);
+    });
+
+    next.addEventListener('click', () => { //функция стрелочка вперед
+        plussSlides(1);
+    });
+    
+    //используем делегирование значит с объектом event
+    dotWrap.addEventListener('click', event => {
+        for (let i = 0; i < dots.length + 1; i++) { //перебираем все точки (не используем стили)
+            //event.target. - узнать элемент на который кликнули
+            if (event.target.classList.contains('dot') && event.target == dots[i - 1]) { //.classList.contains('dot') есть ли у эелемента класс 'dot'
+                currentSlide(i);
+            };
+        };
+    });
+
+    //Calc lesson 4.7
+    let persons = document.querySelectorAll('.counter-block-input')[0],
+        restDays = document.querySelectorAll('.counter-block-input')[1],
+        plase = document.getElementById('select'),
+        totalValue = document.getElementById('total'),
+        personeSum = 0,
+        daySum  = 0,
+        total = 0;
+
+        totalValue.innerHTML = 0; 
+        //или
+        //totalValue.innerText = 0;
+        persons.addEventListener('input', function() { //можно 'change'// нельзя использовать => т.к. исп. this
+            personeSum = +this.value;
+            total = (daySum + personeSum) * 4000;
+
+            if (restDays.value == '' || persons.value == '') {
+                totalValue.innerHTML = 0;
+            } else {
+                totalValue.innerHTML = total;    
+            }
+        });
+        
+        restDays.addEventListener('input', function() { //можно 'change'// нельзя использовать => т.к. исп. this
+            daySum = +this.value;
+            total = (daySum + personeSum) * 4000;
+   
+            if (restDays.value == '' || persons.value == '') {
+                totalValue.innerHTML = 0;
+            } else {
+                totalValue.innerHTML = total;    
+            }
+        });
+
+        plase.addEventListener('change', function() {
+            if (restDays.value == '' || persons.value == '') {
+                totalValue.innerHTML = 0;
+            } else {
+                let a = total;
+                totalValue.innerHTML = a * this.options[this.selectedIndex].value;
+            }
+        });
+
+   
+
 });
